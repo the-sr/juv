@@ -1,0 +1,26 @@
+[package]
+name = "juv"
+version = "0.1.0"
+edition = "2021"
+description = "A tool to manage Java versions and project dependencies"
+license = "MIT"
+
+[[bin]]
+name = "juv"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+reqwest = { version = "0.12", features = ["json"] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+zip = "2"
+flate2 = "1"
+tar = "0.4"
+dirs = "5"
+anyhow = "1"
+colored = "2"
+indicatif = "0.17"
+toml = "0.8"
+sha2 = "0.10"
