@@ -19,26 +19,38 @@ use crate::project::config::create_project_config;
 /// * `name` - The name of the project folder to create.
 /// * `java_version` - The Java version to install (e.g., "17", "21").
 pub async fn run(name: &str, java_version: &str) -> Result<()> {
-    println!("{} Creating project '{}'...", "→".cyan(), name);
+    // Handle "." as the current directory.
+    let project_path = if name == "." {
+        Path::new(".")
+    } else {
+        Path::new(name)
+    };
 
-    // Create the project folder.
-    let project_path = Path::new(name);
-    if project_path.exists() {
-        return Err(anyhow::anyhow!(
-            "Folder '{}' already exists. Choose a different name.",
-            name
-        ));
+    let project_name = if name == "." {
+        std::env::current_dir()?
+            .file_name()
+            .unwrap_or_default()
+            .to_string_lossy()
+            .to_string()
+    } else {
+        name.to_string()
+    };
+
+    println!("{} Setting up project '{}'...", "→".cyan(), project_name);
+
+    // Create the project folder if it doesn't exist.
+    if !project_path.exists() {
+        fs::create_dir_all(project_path)
+            .with_context(|| format!("Failed to create folder '{}'", name))?;
     }
-    fs::create_dir_all(project_path)
-        .with_context(|| format!("Failed to create folder '{}'", name))?;
 
-    // Create a standard project structure.
+    // Create a standard project structure (only if folders don't exist).
     println!("{} Setting up project structure...", "→".cyan());
-    fs::create_dir_all(project_path.join("src"))?;
-    fs::create_dir_all(project_path.join("src/main"))?;
-    fs::create_dir_all(project_path.join("src/main/java"))?;
-    fs::create_dir_all(project_path.join("src/test"))?;
-    fs::create_dir_all(project_path.join("src/test/java"))?;
+    let _ = fs::create_dir_all(project_path.join("src"));
+    let _ = fs::create_dir_all(project_path.join("src/main"));
+    let _ = fs::create_dir_all(project_path.join("src/main/java"));
+    let _ = fs::create_dir_all(project_path.join("src/test"));
+    let _ = fs::create_dir_all(project_path.join("src/test/java"));
 
     // Create the .juv folder inside the project.
     let juv_dir = project_path.join(".juv");
@@ -50,7 +62,7 @@ pub async fn run(name: &str, java_version: &str) -> Result<()> {
         "→".cyan(),
         java_version
     );
-    let jdk_dir = get_project_jdk_dir(name);
+    let jdk_dir = get_project_jdk_dir(".");
     let downloaded_path = download_jdk(java_version, jdk_dir.to_str().unwrap()).await?;
 
     println!("{} Installing Java {}...", "→".cyan(), java_version);
@@ -62,13 +74,8 @@ pub async fn run(name: &str, java_version: &str) -> Result<()> {
     println!(
         "{} Project '{}' created with Java {}!",
         "✓".green().bold(),
-        name,
+        project_name,
         java_version
-    );
-    println!(
-        "{} Run 'cd {}' and 'juv run' to start.",
-        "→".cyan(),
-        name
     );
 
     Ok(())
