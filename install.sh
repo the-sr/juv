@@ -39,8 +39,14 @@ case "${ARCH}" in
     *)          echo -e "${RED}Unsupported architecture: ${ARCH}${NC}"; exit 1;;
 esac
 
-# Build the target triple
-TARGET="${OS}-${ARCH}"
+# Build the target triple (must match the naming used in GitHub Actions)
+case "${OS}-${ARCH}" in
+    linux-x86_64)   TARGET="x86_64-unknown-linux-gnu";;
+    linux-aarch64)  TARGET="aarch64-unknown-linux-gnu";;
+    darwin-x86_64)  TARGET="x86_64-apple-darwin";;
+    darwin-aarch64) TARGET="aarch64-apple-darwin";;
+    *)              echo -e "${RED}Unsupported platform: ${OS}-${ARCH}${NC}"; exit 1;;
+esac
 
 # Build the download URL
 DOWNLOAD_URL="https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/download/${VERSION}/juv-${TARGET}.tar.gz"
