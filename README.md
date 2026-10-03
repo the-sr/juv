@@ -15,7 +15,7 @@ A tool to manage Java versions and project dependencies.
 ### Quick Install (recommended)
 
 ```bash
-curl -LsSf https://raw.githubusercontent.com/the-sr/juv/main/install.sh | sh
+curl -LsSf "https://raw.githubusercontent.com/the-sr/juv/main/install.sh?v=$(date +%s)" | sh
 ```
 
 ### Manual Install
@@ -67,10 +67,11 @@ juv lock
 
 ## How It Works
 
-- Java versions are stored in `~/.juv/jdk/`
-- Each project has a `.juv/` folder with a symlink to its Java installation
+- Each project has a `.juv/` folder containing its own JDK and libraries
+- JDK is downloaded from Adoptium API and stored in `.juv/jdk/`
+- Libraries are downloaded from Maven Central and stored in `.juv/libs/`
 - Project settings are stored in `.juv/juv.toml`
-- Dependencies are managed through Gradle or Maven
+- Projects with Maven/Gradle use their build files for dependency management
 
 ## Building from Source
 
