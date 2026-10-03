@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 # GitHub repository details
 REPO_OWNER="the-sr"
 REPO_NAME="juv"
-VERSION="v0.1.0"
+VERSION="v0.1.1"
 
 # Installation directory
 INSTALL_DIR="${HOME}/.local/bin"
